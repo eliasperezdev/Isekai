@@ -1,0 +1,41 @@
+Controladores
+productos:
+mostrar los ultimos 6 ingresos
+mostrar 6 recomendados
+
+en pantalla de shop
+traer productos en orden de ultimos a mas viejos
+filtrar por: categorias, editorial, precio
+
+en pantalla de un producto
+traer sus datos
+mostrar imagenes
+
+checkout
+pagar sin registro
+si esta registrado devolver datos a confirmar
+traer direcciones
+pagar con los datos
+
+mostrar 6 categorias
+
+usuarios
+login
+register
+
+implementar sendgrid en contacto
+
+
+administracion
+productos
+mostrar productos paginado por 10 element
+agregar, modificar, eliminar producto
+cambiar condicion del producto
+cambiar stock del producto
+
+CRUD categorias
+
+ordenes
+crear, cancelar ordenes 
+cambiar estado
+https://parzibyte.me/blog/2021/05/03/factura-pdf-node-js/
