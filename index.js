@@ -19,10 +19,12 @@ import routerUser from "./src/routes/user.route.js";
 import routerAuth from "./src/routes/auth.route.js";
 import cors from 'cors'
 import routerOrder from "./src/routes/order.route.js";
-import routerPayment from "./src/routes/payment.route.js";
+import routerEmail from "./src/routes/EmailContact.route.js";
 import routerFavorities from "./src/routes/favorite.route.js";
 import routerAddress from "./src/routes/address.route.js";
 import { dashboard } from "./src/controllers/Category.controller.js";
+import routerTicket from "./src/routes/ticket.route.js";
+import reporterRoute from "./src/routes/reporter.route.js";
 
 const app = express()
 app.use(express.json())
@@ -44,8 +46,10 @@ app.use('/api/favorities', routerFavorities);
 app.use('/api/login', routerAuth);
 app.use('/api/orders', routerOrder);
 app.use('/api/address', routerAddress);
-app.use('/api/payment', routerPayment);
+app.use('/api/contact', routerEmail);
 app.use('/api/dashboard', dashboard);
+app.use('/api/ticket', routerTicket);
+app.use('/api/report', reporterRoute);
 
 const PORT = process.env.PORT || 4000
 

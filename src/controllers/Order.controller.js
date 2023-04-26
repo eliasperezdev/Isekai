@@ -15,7 +15,7 @@ dotenv.config()
 const getOrdens = async (req, res) => {
     const orders = await Order.findAll({where: {
         status: {
-          [Op.ne]: "Entregado",
+            [Op.notIn]: ['No pagado', 'Entregado'],
         },
       },include: [User], order: [['createdAt', 'DESC']]});
     if(orders.length > 0) {
@@ -91,14 +91,14 @@ mercadopago.configure({ access_token: process.env.ACCESS_SECRET_MP})
 const addOrder = async (req, res) => {
     //Recibo los productos y la direccion
     const data = req.body;
-    const {userData,formData, shoppingCart} = data
-
-    console.log(shoppingCart);
+    const {userData,formData, shoppingCart, additionalData} = data
+    console.log(data);
 
     //Inicializamos una instancia a guardar orden
     const newOrden = Order.build({
         dateTime: new Date(),
-        status: "No pagado"
+        status: "No pagado",
+        additionalData: additionalData
     })
     //Verificamos si tiene id address, si lo tiene lo guardamos directamente / si no lo tiene creamos una direccion nueva y asignamos el nuevo id
     if(formData.idAddress) {
@@ -139,15 +139,14 @@ const addOrder = async (req, res) => {
         }
       });
 
-      let discount
-      for (const shoppingCart of productsStock) {
-        const product = shoppingCart.quantify;
-        const stockProduct = productsStock.stock;
+      let discount = 0
 
-        discount += shoppingCart.descuento
-      
-        if (product > stockProduct) {
-            return res.status(500).json("Falta stock")
+      for (const product of shoppingCart) {
+        const dbProduct = await Product.findByPk(product.id);
+        discount += (product.descuento*product.quantify)
+        console.log(discount);
+        if (dbProduct.stock < product.quantify) {
+          return res.status(500).json(`El producto "${dbProduct.name}" no tiene suficiente stock.`);
         }
       }
 
@@ -162,7 +161,7 @@ const addOrder = async (req, res) => {
             description: prod.description,
             category_id: "art",
             quantity: prod.quantify,
-            unit_price: prod.price,
+            unit_price: (prod.price-prod.descuento),
         })),
         back_urls: {
             success: `${process.env.FRONTEND_URL}/success/`,
@@ -182,13 +181,10 @@ const addOrder = async (req, res) => {
         (accumulator, product) => accumulator + (product.price*product.quantify),
         0
       );
-    const tax = discount
     newOrden.totalSale =total
-    newOrden.tax = tax
+    newOrden.tax = discount
     newOrden.preferenceId = resMP.body.id
     //Finalizamos
-    
-
     try {
         const order = await newOrden.save()
         shoppingCart.forEach(async product => {
@@ -203,6 +199,7 @@ const addOrder = async (req, res) => {
                 }
             )
         })
+        console.log(order);
         return res.status(200).json({link: resMP.body.init_point})
     } catch (error) {
         console.log(error);

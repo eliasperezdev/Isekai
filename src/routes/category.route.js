@@ -2,7 +2,8 @@ import {
     getCategories,
     addCategory,
     editCategory,
-    deleteCategory
+    deleteCategory,
+    getCategory
 } from '../controllers/Category.controller.js';
 
 import { Router } from 'express';
@@ -15,6 +16,7 @@ const upload = multer({ dest: '../uploads' })
 const routerCategory = Router();
 
 routerCategory.get('/', getCategories);
+routerCategory.get('/:id', getCategory);
 routerCategory.post('/',validateToken, verifyAdmin,upload.single('file'), addCategory)
 routerCategory.put('/:idCategory',validateToken, verifyAdmin, editCategory);
 

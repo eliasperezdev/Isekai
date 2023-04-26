@@ -14,6 +14,15 @@ const getCategories = async (req, res) => {
     return res.status(200).json("No hay categorias")
 }
 
+const getCategory = async (req, res) => {
+    const category = await Category.findOne({where: {id: req.params.id}});
+    try {
+        return res.status(200).json(category)
+    } catch (error) {
+        return res.status(500).json("No hay categoria")
+    }
+}
+
 const addCategory = async (req, res) => {
     const result = await cloudinary.uploader.upload(req.file.path);
     const category = req.body
@@ -30,8 +39,10 @@ const addCategory = async (req, res) => {
 
 const editCategory = async (req, res) => {
     const {idCategory} =  req.params
+    console.log(idCategory);
 
     const category = await Category.update(req.body, {where:{id: idCategory}})
+    console.log(category);
 
     if(category[0]===0) {
         return res.status(403).json("No se pudo actualizar")
@@ -99,5 +110,6 @@ export {
     addCategory,
     editCategory,
     deleteCategory,
-    dashboard
+    dashboard,
+    getCategory
 }
