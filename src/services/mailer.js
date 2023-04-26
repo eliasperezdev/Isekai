@@ -7,7 +7,7 @@
     secure: true, // true for 465, false for other ports
     auth: {
       user: "eliasdaniperez@gmail.com", // generated ethereal user
-      pass: "fhqlzqhbehcdlfmj", // generated ethereal password
+      pass: "", // generated ethereal password
     },
   });
 
