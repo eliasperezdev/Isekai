@@ -16,7 +16,7 @@ const routerUser = Router();
 
 routerUser.get('/',validateToken, verifyAdmin, getUsers);
 routerUser.get('/user/:id', getUser);
-routerUser.get('/dni/:id', getUserDNI);
+routerUser.get('/email/:id', getUserDNI);
 routerUser.get('/seller',validateToken, verifyAdmin, getSeller);
 routerUser.post('/', addUser)
 routerUser.post('/updateRole/:id',validateToken,verifyAdmistrador,updateRole)

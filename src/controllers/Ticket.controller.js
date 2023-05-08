@@ -10,16 +10,29 @@ import { fileURLToPath } from 'url';
 import { transporter } from "../services/mailer.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+
+//https://github.com/thecodingstudio/nodejs-ejs-Ecommerce-website/blob/main/controllers/shop.js
 const getTicket = async (req, res ) => {
     const { idOrder } = req.params;
 
     const order = await Order.findOne({where: {id: idOrder}, include: [{model: OrderDetails, include: [Product]}, User]})
+
+    if(order.TicketId) {
+        const ticket = await Ticket.findOne({where: {id:order.TicketId}})
+        const filePath = path.join(__dirname, '..', 'uploads', ticket.status);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=${ticket.status}`);
+        console.log(ticket.status);
+        console.log(filePath);
+        return res.sendFile(filePath);
+    }
     // Calcular el total de la factura con descuentos en los productos
     const total = order.totalSale
     const customerName = order.User.name + " " + order.User.lastName
     const dateTime = new Date()
     const tax = order.tax
-    const status = "Generado"
+    const status = "Generando"
 
     const products= order.OrderDetails.map(prod => prod)
     console.log(products);
@@ -30,18 +43,46 @@ const getTicket = async (req, res ) => {
         tax: tax,
         totalSale: total,
         status: status
-     });   
+     }); 
 
+     const businessAddress = 'Sáenz Peña, Chaco';
+     const businessName = 'I Sekai';
+     const businessPhone = '555-1234';
+     const businessEmail = 'info@minegocio.com';
+     const businessLogo = path.join(__dirname,'..','..', 'views' , 'logo.png');
+     
+     order.TicketId= invoice.id
 
-
-     console.log(invoice);
+     order.save()
     // Generar el archivo PDF de la factura
     const doc = new PDFDocument();
     const filename = `invoice-${invoice.id}.pdf`;
     const filePath = path.join(__dirname, '..', 'uploads', filename);
     doc.pipe(fs.createWriteStream(filePath));
-  
-    doc.fontSize(18).text(`Factura #${invoice.id}`, { align: 'center' });
+
+	doc.image(businessLogo, 50, 45, { width: 50 })
+		.fillColor('#444444')
+		.fontSize(20)
+		.text('I Sekai', 110, 57)
+		.fontSize(10)
+		.text('San martin 124', 200, 65, { align: 'right' })
+		.text('General Pinedo, Chaco, Argentina', 200, 80, { align: 'right' })
+		.moveDown();
+
+        doc.fontSize(
+            10,
+        ).text(
+            'Payment is due within 15 days. Thank you for your business.',
+            50,
+            780,
+            { align: 'center', width: 500 },
+        );
+
+// Agrega el título de la factura
+doc.moveDown().font('Helvetica-Bold').fontSize(24).text('Factura', { align: 'center' });
+
+
+
     doc.moveDown();
     doc.fontSize(12).text(`Cliente: ${customerName}`);
     doc.moveDown();
@@ -77,8 +118,12 @@ const getTicket = async (req, res ) => {
     // Aquí es donde puedes enviar el correo electrónico con el archivo adjunto
   
     // Guardar la ruta del archivo PDF en la base de datos
-    invoice.pdfPath = filename;
+    invoice.status = filename;
     await invoice.save();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${invoice.status}.pdf`);
+    console.log(filePath);
+    return res.download(filePath);
 
 };
 

@@ -17,9 +17,9 @@ const getUser = async (req, res) => {
 }
 
 const getUserDNI = async (req, res) => {
-    const dni = req.params.id
+    const email = req.params.id
     try {
-        const user = await User.findOne({where: {dni: dni}})
+        const user = await User.findOne({where: {email: email}})
         return res.status(200).json(user)
     } catch (error) {
         return res.status(500).json("No existe ")

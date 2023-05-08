@@ -6,8 +6,8 @@
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "eliasdaniperez@gmail.com", // generated ethereal user
-      pass: "", // generated ethereal password
+      user: process.env.EMAIL_NODE, // generated ethereal user
+      pass: process.env.KEY_NODEMAILER, // generated ethereal password
     },
   });
 
