@@ -8,9 +8,7 @@ const db = new Sequelize(
     process.env.DATABASE_PASSWORD,
 {
     dialect: 'mysql',
-    dialectModule: mysql2, // Needed to fix sequelize issues with WebPack
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT
+    host: process.env.DATABASE_HOST,
   })
 
 
