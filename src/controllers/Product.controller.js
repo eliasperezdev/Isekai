@@ -129,6 +129,7 @@ const addProduct = async (req, res) => {
 
     const product = req.body
     product.urlImage = result.url
+    console.log(product);
 
     try {
         const newProduct = await Product.create(req.body)
