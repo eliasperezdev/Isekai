@@ -9,6 +9,7 @@ import { Op } from "sequelize";
 import Ticket from "../models/Ticket.js";
 import generateTicket from "../services/generateTicket.js";
 dotenv.config()
+import { transporter } from '../services/mailer.js';
 
 
 // TODO - paginacion y filtros, ademas de traer solos los datos de la tabla
@@ -78,7 +79,8 @@ const getOrden = async (req, res) => {
             User:order.User,
             products: order.OrderDetails.map(prod => prod),
             Address: order.Address,
-            preferenceId: order.preferenceId
+            preferenceId: order.preferenceId,
+            TicketId: order.TicketId
         }
         return res.status(200).json(newOrder)
     } catch (error) {
@@ -150,6 +152,13 @@ const addOrder = async (req, res) => {
         }
       }
 
+      //Creamos la fecha de expiracion
+      let date = new Date()
+
+      date.setHours(date.getHours() + 1)
+
+      let isoDate = date.toISOString()
+
     //creamos la instancia de mercadopago
     //MercadoPago
     let preference = {
@@ -162,6 +171,7 @@ const addOrder = async (req, res) => {
             category_id: "art",
             quantity: prod.quantify,
             unit_price: (prod.price-prod.descuento),
+            date_of_expiration: isoDate
         })),
         back_urls: {
             success: `${process.env.FRONTEND_URL}/success/`,
@@ -170,6 +180,11 @@ const addOrder = async (req, res) => {
         },
         auto_return: "approved",
         binary_mode: true,
+        payment_methods: {
+            excluded_payment_types: [
+                {id: "ticket"}
+            ]
+        }
     }
 
     const resMP = await mercadopago.preferences.create(preference)
@@ -259,8 +274,22 @@ const getFeedback = async (req, res) => {
     })
 
     //Generar el numero de comprobante
+    try {
 
-    return res.status(200).json(order)
+        const user = await User.findOne({where: {id: order.UserId}})
+
+        let info = await transporter.sendMail({
+            from: `"eliasdaniperez@gmail.com`, // sender address
+            to: user.email, // list of receivers
+            subject: `¡Gracias realizar su compra!`, // Subject line
+            text: `Puede realizar el seguimiento de su compra en el siguiente link: ${process.env.FRONTEND_URL}account/order/${order.id}`, // plain text body
+          });
+    // Enviar una respuesta al cliente
+            return res.status(200).json(order);
+    } catch (error) {
+        console.log(error);
+    }
+
 };
 
 export {

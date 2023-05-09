@@ -6,7 +6,7 @@ const login = async (req, res, next) => {
   console.log(req.body);
     try {
         const user = await User.findOne({
-            where: { email: req.body.email },
+          where:{email:req.body.email, isClient:true},
             attributes: ['id', 'name', 'password', 'RoleId'],
         });
         

@@ -58,7 +58,7 @@ const updateRole = async (req, res) => {
 
 const addUser = async (req, res) => {
     console.log(req.body);
-    let user = await User.findOne({where:{email:req.body.email}})
+    let user = await User.findOne({where:{email:req.body.email, isClient:true}})
     if(user) {
         return res.status(400).json("El usuario ya existe")
     }

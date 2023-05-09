@@ -18,14 +18,15 @@ const getTicket = async (req, res ) => {
     const order = await Order.findOne({where: {id: idOrder}, include: [{model: OrderDetails, include: [Product]}, User]})
 
     if(order.TicketId) {
-        const ticket = await Ticket.findOne({where: {id:order.TicketId}})
-        const filePath = path.join(__dirname, '..', 'uploads', ticket.status);
+        //const ticket = await Ticket.findOne({where: {id:order.TicketId}})
+        //const filePath = path.join(__dirname, '..', 'uploads', ticket.status);
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=${ticket.status}`);
-        console.log(ticket.status);
-        console.log(filePath);
-        return res.sendFile(filePath);
+        //res.setHeader('Content-Type', 'application/pdf');
+        //res.setHeader('Content-Disposition', `attachment; filename=${ticket.status}`);
+        //console.log(ticket.status);
+        //console.log(filePath);
+        return res.status(400).json("Ya se ha enviado la factura");
+
     }
     // Calcular el total de la factura con descuentos en los productos
     const total = order.totalSale
@@ -69,19 +70,8 @@ const getTicket = async (req, res ) => {
 		.text('General Pinedo, Chaco, Argentina', 200, 80, { align: 'right' })
 		.moveDown();
 
-        doc.fontSize(
-            10,
-        ).text(
-            'Payment is due within 15 days. Thank you for your business.',
-            50,
-            780,
-            { align: 'center', width: 500 },
-        );
-
 // Agrega el título de la factura
 doc.moveDown().font('Helvetica-Bold').fontSize(24).text('Factura', { align: 'center' });
-
-
 
     doc.moveDown();
     doc.fontSize(12).text(`Cliente: ${customerName}`);

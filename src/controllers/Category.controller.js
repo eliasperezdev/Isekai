@@ -14,6 +14,14 @@ const getCategories = async (req, res) => {
     return res.status(200).json("No hay categorias")
 }
 
+const getCategoriesShop = async (req, res) => {
+    const categories = await Category.findAll({where: {condition: true}});
+    if(categories.length > 0) {
+        return res.status(200).json({categories})
+    }
+    return res.status(200).json("No hay categorias")
+}
+
 const getCategory = async (req, res) => {
     const category = await Category.findOne({where: {id: req.params.id}});
     try {
@@ -111,5 +119,6 @@ export {
     editCategory,
     deleteCategory,
     dashboard,
-    getCategory
+    getCategory,
+    getCategoriesShop
 }

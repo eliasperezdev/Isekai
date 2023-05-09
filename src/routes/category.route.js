@@ -3,7 +3,8 @@ import {
     addCategory,
     editCategory,
     deleteCategory,
-    getCategory
+    getCategory,
+    getCategoriesShop
 } from '../controllers/Category.controller.js';
 
 import { Router } from 'express';
@@ -17,6 +18,7 @@ const routerCategory = Router();
 
 routerCategory.get('/', getCategories);
 routerCategory.get('/:id', getCategory);
+routerCategory.get('/categories/category', getCategoriesShop);
 routerCategory.post('/',validateToken, verifyAdmin,upload.single('file'), addCategory)
 routerCategory.put('/:idCategory',validateToken, verifyAdmin, editCategory);
 
