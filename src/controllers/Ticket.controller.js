@@ -26,6 +26,7 @@ const getTicket = async (req, res ) => {
         //console.log(ticket.status);
         //console.log(filePath);
         return res.status(400).json("Ya se ha enviado la factura");
+
     }
     // Calcular el total de la factura con descuentos en los productos
     const total = order.totalSale
@@ -68,7 +69,6 @@ const getTicket = async (req, res ) => {
 		.text('San martin 124', 200, 65, { align: 'right' })
 		.text('General Pinedo, Chaco, Argentina', 200, 80, { align: 'right' })
 		.moveDown();
-
 
 // Agrega el título de la factura
 doc.moveDown().font('Helvetica-Bold').fontSize(24).text('Factura', { align: 'center' });
