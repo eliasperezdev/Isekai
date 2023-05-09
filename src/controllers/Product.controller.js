@@ -16,7 +16,7 @@ const searchProduct = async (req, res) => {
             ],
             condition: 1
           },
-        include: [Category, Editorial]
+        include: [{model: Category, where:{condition: true}}, Editorial]
       });
       if(products.length > 0) {
         return res.status(200).json({products})
@@ -32,6 +32,10 @@ const getProducts = async (req, res) => {
     }
 
         filter.where.condition = 1
+        filter.include = [{
+            model: Category,
+            where: {condition: true }
+        }]
   
       // Filtrar por rango de precio
       if (query.min && query.max) {
@@ -49,7 +53,7 @@ const getProducts = async (req, res) => {
       if (query.category !== "undefined") {
         filter.include = [{
           model: Category,
-          where: { id: query.category }
+          where: { id: query.category, condition: true }
         }];
       }
 
@@ -105,7 +109,7 @@ const getProduct = async (req, res) => {
 const getLatestProducts = async (req, res) => {
     const {idProduct} =  req.params
 
-    const products = await Product.findAll({where: {condition: 1}, order: [['createdAt',"DESC"]],limit: 8})
+    const products = await Product.findAll({where: {condition: 1, stock:{[Op.gt]:0}}, order: [['createdAt',"DESC"]],limit: 8,include: [{model: Category, where:{condition: true}}]})
 
     try {
         return res.status(200).json(products)
@@ -115,7 +119,7 @@ const getLatestProducts = async (req, res) => {
 }
 
 const getRecommend = async (req, res) => {
-    const products = await Product.findAll({where:{recommend: 1, condition: 1},limit: 8, order:[db.random()]});
+    const products = await Product.findAll({where:{recommend: 1, condition: 1, stock:{[Op.gt]:0}},limit: 8, order:[db.random()],include: [{model: Category, where:{condition: true}}]});
     if(products.length > 0) {
         return res.status(200).json({products})
     }

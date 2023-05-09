@@ -26,7 +26,7 @@
     "mysql2": "^3.2.3",
     "netlify-lambda": "^2.0.16",
     "nodemailer": "^6.9.1",
-    "pdfkit": "^0.13.0",
+    "pdfkit": "^0.11.0",
     "pdfkit-table": "^0.1.99",
     "sequelize": "^6.28.0",
     "serverless-http": "^3.2.0"

@@ -12,7 +12,7 @@ const emailContact =async (req,res,next) => {
     try {
         let info = await transporter.sendMail({
             from: `"${name}" <${email}>`, // sender address
-            to: "eliasdaniperez@gmail.com", // list of receivers
+            to: process.env.EMAIL_NODEMAILER, // list of receivers
             subject: `${title}`, // Subject line
             text: `"${name}" <${email}> envia el siguiente mensaje: ${content}`, // plain text body
           });
